@@ -10,6 +10,9 @@ const Header = () => {
                     <div className="flex items-center justify-end">
                         <nav className="hidden md:flex gap-4 text-black/60 items-center">
                             <Button asChild type="button" variant={"outline"}>
+                                <Link to="/">Home</Link>
+                            </Button>
+                            <Button asChild type="button" variant={"outline"}>
                                 <Link to="/authentication">Login</Link>
                             </Button>
                         </nav>

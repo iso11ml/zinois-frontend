@@ -64,16 +64,9 @@ const SignIn= () => {
             });
     };
 
-
     return (
 
         <div className="flex flex-col gap-6">
-
-            <div className="bg-white border-t-4 border-gray-500 rounded-b text-gray-900 px-4 py-3 " role="alert">
-                <div className="flex flex-col gap-2">
-
-                </div>
-            </div>
 
             <Form {...form}>
                 <form className="bg-white p-6 rounded-md" onSubmit={form.handleSubmit(onSubmit)}>
