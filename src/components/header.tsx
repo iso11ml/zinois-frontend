@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { Button } from "./ui/button";
 
 const Header = () => {
@@ -8,8 +9,8 @@ const Header = () => {
                 <div className="container">
                     <div className="flex items-center justify-end">
                         <nav className="hidden md:flex gap-4 text-black/60 items-center">
-                            <Button type="button" variant={"outline"}>
-                                Login
+                            <Button asChild type="button" variant={"outline"}>
+                                <Link to="/authentication">Login</Link>
                             </Button>
                         </nav>
                     </div>

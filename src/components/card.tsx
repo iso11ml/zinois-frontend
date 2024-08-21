@@ -1,4 +1,4 @@
-const PresentationCard = () => {
+const Card = () => {
     return (
         <div className='p-8 bg-white shadow-xl rounded-lg max-w-lg w-full text-center'>
             <h1 className="text-3xl font-bold mb-4 text-gray-800">
@@ -14,4 +14,4 @@ const PresentationCard = () => {
     )
 }
 
-export default PresentationCard;
+export default Card;
