@@ -1,4 +1,3 @@
-
 import './App.css'
 import PresentationCard from './components/presentation-card'
 import RootLayout from './layout'
@@ -8,7 +7,6 @@ function App() {
     <RootLayout>
       <main className='h-screen flex items-center justify-center bg-gray-200'>
         <PresentationCard />
-        
       </main>
     </RootLayout>
   )
