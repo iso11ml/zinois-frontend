@@ -3,10 +3,14 @@
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import FormFieldInput from "@/components/fields/form-field-input";
+import { useAuth } from "@/providers/auth-provider";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+
 
 
 const formSchema = z.object({
@@ -21,7 +25,9 @@ const formSchema = z.object({
 
 const Login = () => {
 
-    const [isLoading, setIsLoading] = useState(false); 
+    const { signIn, user } = useAuth();
+
+    const [isLoading, setIsLoading] = useState(false);
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -33,32 +39,33 @@ const Login = () => {
         },
     })
 
-    // useEffect(() => {
-    //     if (session?.status == 'authenticated') {
-    //         router.push('/administrator');
-    //     }
-    // }, [session?.status, router]);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (user?.email) {
+            navigate('/');
+        }
+    }, [user, navigate])
 
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
-        console.log(values)
-        setIsLoading(false)
+        const { email, password } = values;
+        const LoginTypeUser = {
+            email,
+            password
+        }
+        signIn(LoginTypeUser)
+            .then(() => {
+                toast.success('Sesión iniciada con éxito');
+                navigate("/");
 
-        // signIn('credentials', {
-        //     ...values,
-        //     redirect: false
-        // })
-        //     .then((callback) => {
-        //         if (callback?.error) {
-        //             toast.error('Credenciales inválidas');
-        //         }
-
-        //         if (callback?.ok && !callback?.error) {
-        //             toast.success('Sesion iniciada');
-        //             router.push('/')
-        //         }
-        //     })
-        //     .finally(() => setIsLoading(false))
+            })
+            .catch((error) => {
+                toast.error('Error al iniciar sesión: ' + error.message);
+            })
+            .finally(() => {
+                setIsLoading(false);
+            });
     };
 
 

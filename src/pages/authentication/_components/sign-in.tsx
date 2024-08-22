@@ -1,4 +1,4 @@
-"use client";
+const NEST_SERVER = import.meta.env.VITE_NEST_SERVER;
 
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -11,19 +11,16 @@ import axios from "axios";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import FormFieldInput from "@/components/fields/form-field-input";
+import { useAuth } from "@/providers/auth-provider";
 
 const formSchema = z.object({
-
-    name: z.string().min(1, {
-        message: "Es necesario que nos digas el nombre de tu empresa"
-    }),
     password: z.string().min(1, {
         message: "Es necesario que crees una contraseña"
     }),
     email: z.string().min(1, {
         message: "Es necesario que crees registres email"
     }),
-    firstName: z.string().min(1, {
+    name: z.string().min(1, {
         message: "Es necesario que escribas tu nombre"
     }),
     lastName: z.string().min(1, {
@@ -34,11 +31,12 @@ const formSchema = z.object({
 
 const SignIn= () => {
 
+    const { signIn } = useAuth();
+
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
             name: "",
-            firstName: "",
             lastName: "",
             password: "",
             email: "",
@@ -51,11 +49,17 @@ const SignIn= () => {
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         setIsLoading(true);
 
-        axios.post(`${process.env.NEST_SERVER}/auth/register`, values)
+        axios.post(`${NEST_SERVER}/auth/register`, values)
             .then(() => {
+                const { email, password } = values;
+                const LoginTypeUser = {
+                    email,
+                    password
+                }
+                signIn(LoginTypeUser)
                 toast.success('Perfil creado');
             })
-            .catch((error) => {
+            .catch((error: any) => {
                 const errorMessage = error.response?.data?.error || 'Algo ha ocurrido!';
                 toast.error(errorMessage);
             })
@@ -73,13 +77,13 @@ const SignIn= () => {
 
                     <div className="grid grid-cols-1 gap-6">
                         <FormFieldInput
-                            nameField={'first_name'}
+                            nameField={'name'}
                             formControl={form.control}
                             title={'Nombre'}
                             placeHolder={""}
                         />
                         <FormFieldInput
-                            nameField={'last_name'}
+                            nameField={'lastName'}
                             formControl={form.control}
                             title={'Apellido'}
                             placeHolder={""}
@@ -97,7 +101,7 @@ const SignIn= () => {
                             formControl={form.control}
                             title={'Contraseña'}
                             placeHolder={""}
-                            isPassword={false}
+                            isPassword={true}
                         />
                     </div>
 

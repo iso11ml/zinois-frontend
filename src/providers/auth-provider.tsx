@@ -1,5 +1,6 @@
-import { useContext, createContext, useState, ReactNode } from "react";
+import { useContext, createContext, useState, useEffect, ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
+const NEST_SERVER = import.meta.env.VITE_NEST_SERVER;
 
 interface AuthContextType {
   token: string;
@@ -27,12 +28,35 @@ interface AuthProviderProps {
 
 const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<UserType | null>(null);
-  const [token, setToken] = useState<string>(localStorage.getItem("site") || "");
+  const [token, setToken] = useState<string>('');
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem("site");
+    if (storedToken) {
+      setToken(storedToken);
+      // getCurrentUser(storedToken);
+    }
+  }, []);
+
+  // const getCurrentUser = async (token: string) => {
+  //   try {
+  //     const response = await fetch(`${NEST_SERVER}/auth/user`, {
+  //       headers: {
+  //         'Authorization': `Bearer ${token}`,
+  //       },
+  //     });
+  //     if (!response.ok) throw new Error('Failed to fetch user data');
+  //     const userData = await response.json();
+  //     setUser(userData);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
 
   const signIn = async (data: LoginDataType) => {
     try {
-      const response = await fetch("login/login", {
+      const response = await fetch(`${NEST_SERVER}/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -40,18 +64,25 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
         body: JSON.stringify(data),
       });
 
-      const res = await response.json();
-      
-      if (res.data) {
-        setUser(res.data.user);
-        setToken(res.token);
-        localStorage.setItem("site", res.token);
+      const dataResponse = await response.json();
+
+      if (dataResponse.account && dataResponse.token && dataResponse.token.token) {
+        const { account, token } = dataResponse;
+
+        setUser({
+          id: account.id,
+          name: account.name,
+          email: account.email,
+        });
+        setToken(token.token);
+        localStorage.setItem("site", token.token);
         navigate("/");
-        return;
+
+      } else {
+        throw new Error('Invalid response data');
       }
-      throw new Error(res.message);
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -59,7 +90,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
     setUser(null);
     setToken("");
     localStorage.removeItem("site");
-    navigate("/login");
+    navigate("/authentication");
   };
 
   return (
