@@ -9,8 +9,9 @@ import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import FormFieldInput from "@/components/fields/form-field-input";
 import { useAuth } from "@/providers/auth-provider";
+import { POST, PATCH } from "../services/contact-service";
+import { Contact } from "@/interfaces/contac-interfaces";
 
-const NEST_SERVER = import.meta.env.VITE_NEST_SERVER;
 
 const formSchema = z.object({
     name: z.string().min(1, {
@@ -27,49 +28,42 @@ const formSchema = z.object({
     }),
 });
 
-interface FormContactProps {
-    onContactCreated: () => void; // Agrega esta prop
+interface Props {
+    handleContact: () => void;
+    contact?: Contact
 }
 
-const FormContact = ({ onContactCreated }: FormContactProps) => {
+const FormContact = ({ handleContact, contact }: Props) => {
     const { user, token } = useAuth();
     const [isLoading, setIsLoading] = useState(false);
+
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            name: "",
-            lastName: "",
-            phone: "",
-            address: ""
+            name: contact?.name ?  contact?.name : "",
+            lastName: contact?.lastName ? contact?.lastName :  "",
+            phone: contact?.phone ? contact?.phone :  "",
+            address: contact?.address ? contact?.address : ""
         },
     });
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         setIsLoading(true);
-        const userId = user?.id;
-        const updatedValues = {
+
+        const userId = user?.id
+
+        const data = {
             userId,
             ...values,
         };
 
         try {
-            const response = await fetch(`${NEST_SERVER}/contacts`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
-                body: JSON.stringify(updatedValues),
-            });
-
-            if (response.ok) {
-                toast.success('Contacto creado');
-                onContactCreated(); // Llama a la función para actualizar la lista
-            } else {
-                throw new Error(`${response.statusText}`);
-            }
-        } catch (error: any) {
-            toast.error(error.message || 'An error has occurred');
+            await (contact?.id
+                ? PATCH(data, handleContact, token, contact.id)
+                : POST(data, handleContact, token)
+            );
+        } catch (error) {
+            toast.error('Error al enviar el formulario');
         } finally {
             setIsLoading(false);
         }
@@ -80,10 +74,32 @@ const FormContact = ({ onContactCreated }: FormContactProps) => {
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-6">
                     <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
-                        <FormFieldInput nameField={"name"} formControl={form.control} title={"Nombre"} />
-                        <FormFieldInput nameField={"lastName"} formControl={form.control} title={"Apellido"} placeHolder={""} />
-                        <FormFieldInput nameField={"phone"} formControl={form.control} title={"Teléfono"} placeHolder={""} />
-                        <FormFieldInput nameField={"address"} formControl={form.control} title={"Dirección"} />
+                        <FormFieldInput
+                            nameField={"name"}
+                            formControl={form.control}
+                            title={"Nombre"}
+                        />
+
+                        <FormFieldInput
+                            nameField={"lastName"}
+                            formControl={form.control}
+                            title={"Apellido"}
+                            placeHolder={""}
+                        />
+
+                        <FormFieldInput
+                            nameField={"phone"}
+                            formControl={form.control}
+                            title={"Teléfono"}
+                            placeHolder={""}
+                        />
+
+                        <FormFieldInput
+                            nameField={"address"}
+                            formControl={form.control}
+                            title={"Dirección"}
+                        />
+
                     </div>
 
                     <div className="flex justify-end">

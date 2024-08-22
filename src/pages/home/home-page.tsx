@@ -14,6 +14,7 @@ interface DataType {
     lastName: string;
     phone: string;
     address: string;
+    userId: string
 }
 
 const HomePage = () => {
@@ -55,7 +56,7 @@ const HomePage = () => {
         fetchData();
     }, []);
 
-    const handleContactCreated = () => {
+    const handleContact = () => {
         fetchData();
     };
 
@@ -67,7 +68,7 @@ const HomePage = () => {
             <section className="w-full h-full flex flex-col gap-6 p-6">
                 <div className="flex justify-end items-center">
                     <Modal dialogTitle={"Nuevo contacto"} dialogDescription={""} dialogTrigger={"Crear contacto"}>
-                        <FormContact onContactCreated={handleContactCreated} />
+                        <FormContact handleContact={handleContact} />
                     </Modal>
                 </div>
                 <div className="flex flex-col px-6 h-full sm:px-0 w-full">
@@ -76,9 +77,9 @@ const HomePage = () => {
                             <PresentationCard />
                         </div>
                     ) : (
-                        <div className="grid grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             {data.map((contact) => (
-                                <ContactCard key={contact.id} contact={contact} />
+                                <ContactCard key={contact.id} contact={contact} handleContact={handleContact} />
                             ))}
                         </div>
                     )}

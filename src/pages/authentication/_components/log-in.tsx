@@ -57,8 +57,6 @@ const Login = () => {
         signIn(LoginTypeUser)
             .then(() => {
                 toast.success('Sesión iniciada con éxito');
-                navigate("/");
-
             })
             .catch((error) => {
                 toast.error('Error al iniciar sesión: ' + error.message);

@@ -1,4 +1,5 @@
 import { useContext, createContext, useState, useEffect, ReactNode } from "react";
+import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 const NEST_SERVER = import.meta.env.VITE_NEST_SERVER;
 
@@ -35,24 +36,8 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
     const storedToken = localStorage.getItem("site");
     if (storedToken) {
       setToken(storedToken);
-      // getCurrentUser(storedToken);
     }
   }, []);
-
-  // const getCurrentUser = async (token: string) => {
-  //   try {
-  //     const response = await fetch(`${NEST_SERVER}/auth/user`, {
-  //       headers: {
-  //         'Authorization': `Bearer ${token}`,
-  //       },
-  //     });
-  //     if (!response.ok) throw new Error('Failed to fetch user data');
-  //     const userData = await response.json();
-  //     setUser(userData);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
 
   const signIn = async (data: LoginDataType) => {
     try {
@@ -64,9 +49,10 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
         body: JSON.stringify(data),
       });
 
+
       const dataResponse = await response.json();
 
-      if (dataResponse.account && dataResponse.token && dataResponse.token.token) {
+      if (dataResponse.account && response.ok) {
         const { account, token } = dataResponse;
 
         setUser({
@@ -79,7 +65,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
         navigate("/");
 
       } else {
-        throw new Error('Invalid response data');
+        toast.error('Credenciales inválidas');
       }
     } catch (error) {
       console.error(error);
