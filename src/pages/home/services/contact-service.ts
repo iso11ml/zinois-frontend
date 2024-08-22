@@ -57,27 +57,21 @@ export const PATCH = async (data: CreateContact, onContactCreated: () => void, t
     }
 };
 
-// // Eliminar Contacto (DELETE)
-// export const deleteContact = async (contactId: string) => {
-//     setIsLoading(true);
+export const DELETE = async (token: string, contactId: string) => {
 
-//     try {
-//         const response = await fetch(`${NEST_SERVER}/contacts/${contactId}`, {
-//             method: 'DELETE',
-//             headers: {
-//                 'Authorization': `Bearer ${token}`,
-//             },
-//         });
+    try {
+        const response = await fetch(`${NEST_SERVER}/contacts/${contactId}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+        });
 
-//         if (response.ok) {
-//             toast.success('Contacto eliminado');
-//             onContactDeleted();
-//         } else {
-//             throw new Error(`${response.statusText}`);
-//         }
-//     } catch (error: any) {
-//         toast.error(error.message || 'An error has occurred');
-//     } finally {
-//         setIsLoading(false);
-//     }
-// };
+        if (!response.ok) return toast.error('Error al eliminar el contacto');
+
+        toast.success('Contacto eliminado');
+
+    } catch (error: any) {
+        toast.error(error.message || 'An error has occurred');
+    }
+};

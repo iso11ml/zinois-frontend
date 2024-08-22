@@ -40,6 +40,8 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
   }, []);
 
   const signIn = async (data: LoginDataType) => {
+
+    console.log(`${NEST_SERVER}/auth/login`)
     try {
       const response = await fetch(`${NEST_SERVER}/auth/login`, {
         method: "POST",
