@@ -1,4 +1,3 @@
-import './app.css';
 import { Routes, Route } from 'react-router-dom';
 import RootLayout from './layout';
 import AuthenticationPage from './pages/authentication/authentication-page';
