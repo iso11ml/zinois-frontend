@@ -57,7 +57,7 @@ export const PATCH = async (data: CreateContact, onContactCreated: () => void, t
     }
 };
 
-export const DELETE = async (token: string, contactId: string) => {
+export const DELETE = async (token: string, contactId: string, onContactCreated: () => void, ) => {
 
     try {
         const response = await fetch(`${NEST_SERVER}/contacts/${contactId}`, {
@@ -71,6 +71,8 @@ export const DELETE = async (token: string, contactId: string) => {
 
         toast.success('Contacto eliminado');
 
+        onContactCreated();
+        
     } catch (error: any) {
         toast.error(error.message || 'An error has occurred');
     }

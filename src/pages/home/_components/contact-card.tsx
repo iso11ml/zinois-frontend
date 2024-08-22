@@ -35,7 +35,9 @@ const ContactCard: React.FC<ContactCardProps> = ({ contact, handleContact }) => 
 
         <Modal dialogTitle={"Eliminar"} dialogDescription={`¿Estás seguro de elimiar a ${contact.name}`} dialogTrigger={"Elimar"}>
           <div className="flex justify-end">
-            <Button onClick={() => DELETE(token, contact.id)} />
+            <Button className="bg-red-500" onClick={() => DELETE(token, contact.id, handleContact)}>
+              Eliminar
+            </Button>
           </div>
         </Modal>
 
